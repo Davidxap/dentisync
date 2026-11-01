@@ -52,7 +52,7 @@ export default function Page() {
   return (
     <main className="clinic-shell">
       <aside className="clinic-sidebar">
-        <div className="clinic-brand"><span className="tooth-mark"><img src="/sonrisa-dental-logo.png" alt="" /></span><span>Sonrisa<span className="brand-dot">.</span></span></div>
+        <div className="clinic-brand"><img src="/sonrisa-dental-logo.png" alt="Sonrisa, clínica dental" className="brand-logo" /></div>
         <div className="clinic-switcher"><span className="online-dot" /> Consultorio Roma <ChevronRight /></div>
         <nav className="clinic-nav" aria-label="Navegación principal">
           {[
