@@ -16,7 +16,7 @@ import {
   Search,
   Settings,
   ShieldCheck,
-  Stethoscope,
+  CircleDot,
   Users,
   X,
 } from 'lucide-react'
@@ -52,7 +52,7 @@ export default function Page() {
   return (
     <main className="clinic-shell">
       <aside className="clinic-sidebar">
-        <div className="clinic-brand"><span className="tooth-mark"><Stethoscope /></span><span>Sonrisa<span className="brand-dot">.</span></span></div>
+        <div className="clinic-brand"><span className="tooth-mark"><CircleDot /></span><span>Sonrisa<span className="brand-dot">.</span></span></div>
         <div className="clinic-switcher"><span className="online-dot" /> Consultorio Roma <ChevronRight /></div>
         <nav className="clinic-nav" aria-label="Navegación principal">
           {[
@@ -76,7 +76,7 @@ export default function Page() {
         <div className="clinic-page">
           <div className="clinic-intro"><div><p className="date-kicker">MARTES, 12 DE MARZO DE 2024 · UTC-5</p><h1>Buenos días, Daniel</h1><p>Hoy acompañamos a 4 pacientes en su camino para terminar el tratamiento.</p></div><button className="coral-button" onClick={() => setShowModal(true)}><Plus /> Nueva cita</button></div>
 
-          <section className="progress-banner" aria-label="Progreso del consultorio"><div className="banner-copy"><span className="banner-icon"><Stethoscope /></span><div><p>El progreso es la cita más importante</p><strong>18 pacientes están avanzando en su tratamiento esta semana.</strong></div></div><button onClick={() => setActive('Tratamientos')}>Ver tratamientos <ChevronRight /></button></section>
+          <section className="progress-banner" aria-label="Progreso del consultorio"><div className="banner-copy"><span className="banner-icon"><CircleDot /></span><div><p>El progreso es la cita más importante</p><strong>18 pacientes están avanzando en su tratamiento esta semana.</strong></div></div><button onClick={() => setActive('Tratamientos')}>Ver tratamientos <ChevronRight /></button></section>
 
           <div className="section-title"><div><p className="section-kicker">SALA DE ESPERA</p><h2>La agenda de hoy</h2></div><button className="quiet-button" onClick={() => setActive('Agenda')}>Ver agenda completa <ChevronRight /></button></div>
           <section className="schedule-card"><div className="schedule-head"><span>HORA</span><span>PACIENTE Y TRATAMIENTO</span><span>ESTADO</span></div>{appointments.map((item) => <div className="schedule-row" key={item.name}><time>{item.time}</time><span className={`schedule-line line-${item.color}`} /><Avatar initials={item.initials} color={item.color} /><div className="schedule-person"><strong>{item.name}</strong><span>{item.treatment}</span></div><span className={`appointment-state state-${item.color}`}>{item.stage}</span><button className="row-more" aria-label={`Opciones para ${item.name}`}><MoreHorizontal /></button></div>)}<button className="schedule-footer" onClick={() => setActive('Agenda')}>Abrir agenda semanal <ChevronRight /></button></section>
