@@ -5,15 +5,13 @@ import {
   Bell,
   CalendarDays,
   Check,
-  ChevronLeft,
   ChevronRight,
-  CircleHelp,
   Clock3,
-  FileText,
-  LayoutDashboard,
+  Mail,
   Menu,
   MessageCircle,
   MoreHorizontal,
+  Phone,
   Plus,
   Search,
   Settings,
@@ -24,67 +22,73 @@ import {
 } from 'lucide-react'
 
 const appointments = [
-  { time: '09:00', name: 'Sofía Ramírez', treatment: 'Limpieza dental', initials: 'SR', tone: 'mint', status: 'Confirmada' },
-  { time: '10:30', name: 'Carlos Mendoza', treatment: 'Valoración inicial', initials: 'CM', tone: 'blue', status: 'Pendiente' },
-  { time: '12:00', name: 'Ana Torres', treatment: 'Ortodoncia · Control', initials: 'AT', tone: 'peach', status: 'Confirmada' },
-  { time: '16:00', name: 'Diego Herrera', treatment: 'Endodoncia · Sesión 2', initials: 'DH', tone: 'lilac', status: 'Pendiente' },
+  { time: '09:00', name: 'Sofía Ramírez', treatment: 'Ortodoncia · Control 4', stage: 'En camino', color: 'mint', initials: 'SR' },
+  { time: '10:30', name: 'Carlos Mendoza', treatment: 'Valoración inicial', stage: 'Confirmada', color: 'sand', initials: 'CM' },
+  { time: '12:00', name: 'Ana Torres', treatment: 'Endodoncia · Control 2', stage: 'Confirmada', color: 'coral', initials: 'AT' },
+  { time: '16:00', name: 'Diego Herrera', treatment: 'Implante · Sesión 2', stage: 'Por confirmar', color: 'blue', initials: 'DH' },
 ]
 
-const followUps = [
-  { name: 'Mariana López', detail: 'Sin cita en 21 días', initials: 'ML', tone: 'peach', channel: 'WhatsApp', action: 'Enviar recordatorio' },
-  { name: 'Jorge Castillo', detail: 'Próxima sesión recomendada', initials: 'JC', tone: 'blue', channel: 'Correo', action: 'Programar seguimiento' },
-  { name: 'Lucía Fernández', detail: 'Tratamiento pausado', initials: 'LF', tone: 'mint', channel: 'WhatsApp', action: 'Enviar recordatorio' },
+const contactQueue = [
+  { name: 'Mariana López', reason: 'No tiene WhatsApp ni correo registrado', progress: '3 de 6 controles', initials: 'ML', color: 'coral' },
+  { name: 'Jorge Castillo', reason: 'El correo rebotó ayer', progress: '1 de 4 controles', initials: 'JC', color: 'sand' },
+  { name: 'Lucía Fernández', reason: 'Consentimiento de WhatsApp revocado', progress: '5 de 8 controles', initials: 'LF', color: 'mint' },
 ]
 
-function Avatar({ initials, tone }: { initials: string; tone: string }) {
-  return <span className={`avatar avatar-${tone}`}>{initials}</span>
+function Avatar({ initials, color }: { initials: string; color: string }) {
+  return <span className={`patient-avatar avatar-${color}`}>{initials}</span>
 }
 
 export default function Page() {
-  const [active, setActive] = useState('Resumen')
+  const [active, setActive] = useState('Hoy')
   const [showModal, setShowModal] = useState(false)
   const [notice, setNotice] = useState('')
-  const [reminders, setReminders] = useState(true)
+  const [autoReminders, setAutoReminders] = useState(true)
 
-  const sendReminder = (name: string) => {
-    setNotice(`Recordatorio preparado para ${name}`)
-    setTimeout(() => setNotice(''), 2800)
+  const notify = (message: string) => {
+    setNotice(message)
+    window.setTimeout(() => setNotice(''), 2600)
   }
 
   return (
-    <main className="app-shell">
-      <aside className="sidebar">
-        <div className="brand"><span className="brand-mark"><Stethoscope /></span><span>Sonrisa<span className="brand-accent">.</span></span></div>
-        <div className="workspace"><span className="workspace-dot" /> Consultorio Roma <ChevronRight /></div>
-        <nav className="nav-list" aria-label="Navegación principal">
-          {[['Resumen', LayoutDashboard], ['Agenda', CalendarDays], ['Pacientes', Users], ['Seguimientos', MessageCircle]].map(([label, Icon]) => (
-            <button key={label as string} className={`nav-item ${active === label ? 'active' : ''}`} onClick={() => setActive(label as string)}><Icon /> {label as string}{label === 'Seguimientos' && <span className="nav-count">8</span>}</button>
+    <main className="clinic-shell">
+      <aside className="clinic-sidebar">
+        <div className="clinic-brand"><span className="tooth-mark"><Stethoscope /></span><span>Sonrisa<span className="brand-dot">.</span></span></div>
+        <div className="clinic-switcher"><span className="online-dot" /> Consultorio Roma <ChevronRight /></div>
+        <nav className="clinic-nav" aria-label="Navegación principal">
+          {[
+            ['Hoy', CalendarDays], ['Agenda', Clock3], ['Pacientes', Users], ['Seguimientos', MessageCircle],
+          ].map(([label, Icon]) => (
+            <button key={label as string} className={`clinic-nav-item ${active === label ? 'selected' : ''}`} onClick={() => setActive(label as string)}>
+              <Icon /> {label as string}{label === 'Seguimientos' && <span className="queue-count">3</span>}
+            </button>
           ))}
         </nav>
-        <div className="nav-section">GESTIÓN</div>
-        <nav className="nav-list">
-          <button className="nav-item"><FileText /> Tratamientos</button>
-          <button className="nav-item"><Settings /> Configuración</button>
+        <p className="nav-label">TRATAMIENTOS</p>
+        <nav className="clinic-nav">
+          <button className={`clinic-nav-item ${active === 'Tratamientos' ? 'selected' : ''}`} onClick={() => setActive('Tratamientos')}><ShieldCheck /> Planes de tratamiento</button>
+          <button className={`clinic-nav-item ${active === 'Configuración' ? 'selected' : ''}`} onClick={() => setActive('Configuración')}><Settings /> Configuración</button>
         </nav>
-        <div className="sidebar-bottom"><div className="support-card"><CircleHelp /><div><strong>¿Necesitas ayuda?</strong><span>Visita nuestro centro de soporte</span></div><ChevronRight /></div><div className="profile"><div className="profile-avatar">DR</div><div><strong>Dr. Daniel Ríos</strong><span>Administrador</span></div><MoreHorizontal /></div></div>
+        <div className="sidebar-foot"><div className="help-note"><strong>Un consultorio que acompaña</strong><span>Cada recordatorio acerca a tu paciente a terminar.</span></div><div className="clinic-user"><span className="user-avatar">DR</span><div><strong>Dr. Daniel Ríos</strong><span>Administrador</span></div><MoreHorizontal /></div></div>
       </aside>
 
-      <section className="content">
-        <header className="topbar"><button className="mobile-menu"><Menu /></button><div className="search"><Search /><input aria-label="Buscar pacientes" placeholder="Buscar pacientes..." /></div><div className="top-actions"><button className="icon-button" aria-label="Notificaciones"><Bell /><span className="notification-dot" /></button><div className="top-avatar">DR</div></div></header>
-        <div className="page-content">
-          <div className="welcome-row"><div><p className="eyebrow">MARTES, 12 DE MARZO DE 2024</p><h1>Buenos días, Daniel <span className="wave">✦</span></h1><p className="subtitle">Aquí tienes un resumen de lo que ocurre hoy en tu consultorio.</p></div><button className="primary-button" onClick={() => setShowModal(true)}><Plus /> Nueva cita</button></div>
+      <section className="clinic-content">
+        <header className="clinic-topbar"><button className="mobile-menu" aria-label="Abrir menú"><Menu /></button><div className="patient-search"><Search /><input aria-label="Buscar pacientes" placeholder="Buscar por nombre o teléfono" /></div><button className="notification-button" aria-label="Notificaciones"><Bell /><span /></button><span className="top-user-avatar">DR</span></header>
+        <div className="clinic-page">
+          <div className="clinic-intro"><div><p className="date-kicker">MARTES, 12 DE MARZO DE 2024 · UTC-5</p><h1>Buenos días, Daniel</h1><p>Hoy acompañamos a 4 pacientes en su camino para terminar el tratamiento.</p></div><button className="coral-button" onClick={() => setShowModal(true)}><Plus /> Nueva cita</button></div>
 
-          <div className="stats-grid"><div className="stat-card"><div className="stat-icon stat-blue"><CalendarDays /></div><div><span>Citas de hoy</span><strong>8</strong><small className="positive">+2 vs. ayer</small></div></div><div className="stat-card"><div className="stat-icon stat-green"><Users /></div><div><span>Pacientes activos</span><strong>124</strong><small className="positive">+6 este mes</small></div></div><div className="stat-card"><div className="stat-icon stat-orange"><MessageCircle /></div><div><span>Seguimientos pendientes</span><strong>8</strong><small className="attention">Requieren atención</small></div></div><div className="stat-card"><div className="stat-icon stat-purple"><ShieldCheck /></div><div><span>Tasa de asistencia</span><strong>94.2%</strong><small className="positive">+3.1% este mes</small></div></div></div>
+          <section className="progress-banner" aria-label="Progreso del consultorio"><div className="banner-copy"><span className="banner-icon"><Stethoscope /></span><div><p>El progreso es la cita más importante</p><strong>18 pacientes están avanzando en su tratamiento esta semana.</strong></div></div><button onClick={() => setActive('Tratamientos')}>Ver tratamientos <ChevronRight /></button></section>
 
-          <div className="section-heading"><div><h2>Resumen de hoy</h2><p>Martes, 12 de marzo · 4 citas programadas</p></div><button className="text-button" onClick={() => setActive('Agenda')}>Ver agenda completa <ChevronRight /></button></div>
-          <div className="dashboard-grid"><div className="appointments-card"><div className="card-heading"><div><h3>Próximas citas</h3><span>Hoy, 12 de marzo</span></div><button className="date-button"><CalendarDays /> Esta semana <ChevronRight /></button></div><div className="appointment-list">{appointments.map((item) => <div className="appointment" key={item.name}><time>{item.time}</time><div className="appointment-line" /><Avatar initials={item.initials} tone={item.tone} /><div className="appointment-info"><strong>{item.name}</strong><span>{item.treatment}</span></div><span className={`status status-${item.status === 'Confirmada' ? 'confirmed' : 'pending'}`}>{item.status}</span><button className="more-button" aria-label={`Más opciones para ${item.name}`}><MoreHorizontal /></button></div>)}</div><button className="card-footer" onClick={() => setActive('Agenda')}>Ver todas las citas <ChevronRight /></button></div>
-            <div className="reminders-card"><div className="card-heading"><div><h3>Seguimientos</h3><span>Pacientes que necesitan atención</span></div><span className="alert-badge">8 pendientes</span></div><div className="followup-list">{followUps.map((item) => <div className="followup" key={item.name}><Avatar initials={item.initials} tone={item.tone} /><div className="followup-info"><strong>{item.name}</strong><span>{item.detail}</span><small><MessageCircle /> {item.channel}</small></div><button className="followup-action" onClick={() => sendReminder(item.name)}>{item.action}</button></div>)}</div><button className="card-footer" onClick={() => setActive('Seguimientos')}>Ver todos los seguimientos <ChevronRight /></button></div></div>
+          <div className="section-title"><div><p className="section-kicker">SALA DE ESPERA</p><h2>La agenda de hoy</h2></div><button className="quiet-button" onClick={() => setActive('Agenda')}>Ver agenda completa <ChevronRight /></button></div>
+          <section className="schedule-card"><div className="schedule-head"><span>HORA</span><span>PACIENTE Y TRATAMIENTO</span><span>ESTADO</span></div>{appointments.map((item) => <div className="schedule-row" key={item.name}><time>{item.time}</time><span className={`schedule-line line-${item.color}`} /><Avatar initials={item.initials} color={item.color} /><div className="schedule-person"><strong>{item.name}</strong><span>{item.treatment}</span></div><span className={`appointment-state state-${item.color}`}>{item.stage}</span><button className="row-more" aria-label={`Opciones para ${item.name}`}><MoreHorizontal /></button></div>)}<button className="schedule-footer" onClick={() => setActive('Agenda')}>Abrir agenda semanal <ChevronRight /></button></section>
 
-          <div className="bottom-grid"><div className="calendar-card"><div className="card-heading"><div><h3>Agenda semanal</h3><span>Tu actividad esta semana</span></div><div className="calendar-nav"><button aria-label="Semana anterior"><ChevronLeft /></button><button aria-label="Semana siguiente"><ChevronRight /></button></div></div><div className="week-labels">{['LUN 11','MAR 12','MIÉ 13','JUE 14','VIE 15','SÁB 16'].map((day, i) => <div className={i === 1 ? 'today' : ''} key={day}><span>{day}</span><strong>{[4, 8, 6, 7, 5, 2][i]}</strong></div>)}</div><div className="progress-bar"><span style={{ width: '78%' }} /></div><div className="calendar-summary"><span><i className="legend-dot blue-dot" /> 32 citas programadas</span><span><i className="legend-dot green-dot" /> 5 espacios disponibles</span></div></div><div className="automation-card"><div className="automation-top"><div className="stat-icon stat-orange"><Bell /></div><label className="toggle"><input type="checkbox" checked={reminders} onChange={(e) => setReminders(e.target.checked)} /><span /></label></div><h3>Recordatorios automáticos</h3><p>Ayuda a tus pacientes a no olvidar sus citas y continuar sus tratamientos.</p><div className="channel-row"><span><MessageCircle /> WhatsApp</span><span><span className="mail-icon">@</span> Correo</span></div><button className="outline-button" onClick={() => setActive('Configuración')}>{reminders ? 'Configurar recordatorios' : 'Activar recordatorios'} <ChevronRight /></button></div></div>
+          <div className="section-title contact-title"><div><p className="section-kicker">PARA QUE NADIE SE QUEDE ATRÁS</p><h2>Personas que necesitan contacto</h2></div><span className="manual-badge">3 pendientes</span></div>
+          <div className="contact-grid">{contactQueue.map((item) => <article className="contact-card" key={item.name}><div className="paper-fold" /><div className="contact-top"><Avatar initials={item.initials} color={item.color} /><span className="manual-label">LLAMADA MANUAL</span></div><h3>{item.name}</h3><p>{item.reason}</p><div className="mini-progress"><span style={{ width: item.progress.startsWith('5') ? '63%' : item.progress.startsWith('3') ? '50%' : '25%' }} /></div><div className="contact-meta"><span>{item.progress}</span><button onClick={() => notify(`Llamada registrada para ${item.name}`)}><Phone /> Registrar llamada</button></div></article>)}</div>
+
+          <div className="lower-grid"><section className="treatment-card"><div className="card-title-row"><div><p className="section-kicker">CAMINOS EN CURSO</p><h2>Avance de tratamientos</h2></div><button className="quiet-button" onClick={() => setActive('Tratamientos')}>Ver todos <ChevronRight /></button></div><div className="treatment-row"><div className="treatment-name"><Avatar initials="SR" color="mint" /><div><strong>Sofía Ramírez</strong><span>Ortodoncia</span></div></div><div className="path"><span className="done" /><span className="done" /><span className="current" /><span /><span /><span /></div><span className="path-count">2 de 6</span></div><div className="treatment-row"><div className="treatment-name"><Avatar initials="AT" color="coral" /><div><strong>Ana Torres</strong><span>Endodoncia</span></div></div><div className="path"><span className="done" /><span className="current" /><span /><span /></div><span className="path-count">1 de 4</span></div></section><section className="automation-panel"><div className="automation-heading"><span className="automation-icon"><Bell /></span><label className="switch"><input type="checkbox" checked={autoReminders} onChange={(e) => setAutoReminders(e.target.checked)} /><span /></label></div><p className="section-kicker">ACOMPAÑAMIENTO AUTOMÁTICO</p><h2>Recordatorios activos</h2><p>WhatsApp y correo avisan antes y después de cada control.</p><div className="channel-list"><span><MessageCircle /> WhatsApp</span><span><Mail /> Correo</span></div><button className="quiet-button" onClick={() => setActive('Configuración')}>Configurar canales <ChevronRight /></button></section></div>
         </div>
       </section>
-      {notice && <div className="toast"><Check /> {notice}</div>}
-      {showModal && <div className="modal-backdrop" onClick={() => setShowModal(false)}><div className="modal" onClick={(e) => e.stopPropagation()}><button className="modal-close" onClick={() => setShowModal(false)} aria-label="Cerrar"><X /></button><p className="eyebrow">NUEVA CITA</p><h2>Agendar una cita</h2><p className="modal-copy">La cita se sincronizará con Google Calendar del consultorio.</p><label>Paciente<input placeholder="Buscar paciente..." /></label><label>Tratamiento<select><option>Selecciona un tratamiento</option><option>Limpieza dental</option><option>Valoración inicial</option><option>Ortodoncia · Control</option></select></label><div className="form-row"><label>Fecha<input type="date" defaultValue="2024-03-12" /></label><label>Hora<input type="time" defaultValue="09:00" /></label></div><button className="primary-button full" onClick={() => { setShowModal(false); setNotice('Cita creada y sincronizada con Google Calendar') }}><Check /> Crear cita</button></div></div>}
+      {notice && <div className="clinic-toast"><Check /> {notice}</div>}
+      {showModal && <div className="clinic-modal-backdrop" onClick={() => setShowModal(false)}><div className="clinic-modal" onClick={(e) => e.stopPropagation()}><button className="modal-close" onClick={() => setShowModal(false)} aria-label="Cerrar"><X /></button><p className="section-kicker">NUEVA CITA</p><h2>Agendar una cita</h2><p>Se publicará en el Google Calendar del consultorio.</p><label>Paciente<input placeholder="Buscar por nombre" /></label><label>Tratamiento<select><option>Selecciona un tratamiento</option><option>Ortodoncia · Control</option><option>Endodoncia · Control</option><option>Valoración inicial</option></select></label><div className="modal-fields"><label>Fecha<input type="date" defaultValue="2024-03-12" /></label><label>Hora<input type="time" defaultValue="09:00" /></label></div><button className="coral-button modal-submit" onClick={() => { setShowModal(false); notify('Cita creada y lista para sincronizar') }}><Check /> Crear cita</button></div></div>}
     </main>
   )
 }
